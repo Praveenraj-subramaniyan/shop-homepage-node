@@ -3,9 +3,19 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const cors = require("cors");
+const dotenv = require("dotenv");
+dotenv.config();
+const mongoose = require("mongoose");
+mongoose.connect(process.env.MongoDb_Url, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+mongoose.set("strictQuery", true);
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+
+var loginRouter = require("./routes/login");
+var homeRouter = require('./routes/home');
 
 var app = express();
 
@@ -19,8 +29,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use(cors({ origin: "*" }));
+app.use('/home', homeRouter);
+app.use("/login", loginRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
